@@ -3,13 +3,18 @@ package gotools
 import (
 	"io/ioutil"
 	"log"
+	"os"
 
 	"github.com/adhocore/jsonc"
 )
 
-// 跳过bom头
-func skipBOM(filename string) (newFile []byte, err error) {
-	file, err := ioutil.ReadFile(filename)
+/**
+ * @description: 跳过文件BOM头
+ * @param {string} filename 文件路径
+ * @return {newFile, err} 剔除BOM头的字节数组, 错误
+ */
+func SkipBOM(filepath string) (newFile []byte, err error) {
+	file, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		return nil, err
 	}
@@ -67,14 +72,33 @@ func isUTF16LittleEndianBOM2(buf []byte) bool {
 	return buf[0] == 0xFF && buf[1] == 0xFE
 }
 
-// JsonStrip 格式化json
-// @configFile json文件路径
-func JsonStrip(configFile string) []byte { //格式化不规则json
-	configByte, err := skipBOM(configFile)
+/**
+ * @description: 格式化不规则json
+ * @param {string} configFile json文件路径
+ * @return {[]byte} json文件字节数组
+ */
+func JsonStrip(configFile string) []byte {
+	configByte, err := SkipBOM(configFile)
 	if err != nil {
 		log.Fatalln(err)
 		// panic(err)
 	}
 	j := jsonc.New()
 	return j.Strip(configByte)
+}
+
+/**
+ * @description: 检查路径是否存在
+ * @param {string} path 路径
+ * @return {bool, error} 是否存在, error
+ */
+func Exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }
