@@ -1,5 +1,7 @@
 package gotools
 
+// 运行环境
+
 import (
 	"log"
 	"os"
