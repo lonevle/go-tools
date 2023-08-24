@@ -17,3 +17,12 @@ func GetProgramPath() string {
 	}
 	return filepath.Dir(exePath)
 }
+
+// 获取程序名
+func GetProgramName() string {
+	exePath, err := os.Executable()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return filepath.Base(exePath)
+}
